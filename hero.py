@@ -21,6 +21,8 @@ class Hero:
         self.name = name
         self.starting_health = starting_health
         self.current_health = starting_health
+        self.deaths = 0
+        self.kills = 0
 
     def fight(self, opponent):
         """Current Hero will take turns fighting the opponent hero passed in."""
@@ -57,10 +59,11 @@ class Hero:
         '''Calculate the total block amount from all armor blocks.
           return: total_block:Int
         '''
-        if self.current_health > 0 and not self.armor:
+        if self.current_health > 0 and len(self.armor) > 0:
             total_block = 0
             for armor in self.armor:
-              total_block += armor.block()
+                block = armor.block()
+                total_block += block
             return total_block
         else:
           return 0
@@ -96,12 +99,26 @@ class Hero:
                 opponent.take_damage(self_attack)
             if self.is_alive():
                 print(f'{self.name} won!')
+                self.add_kill(1)
+                opponent.add_death(1)
+                return self
             elif opponent.is_alive():
                 print(f'{opponent.name} won!')
+                opponent.add_kill(1)
+                self.add_death(1)
+                return opponent
 
     def add_weapon(self, weapon):
         '''Add weapon to self.abilities'''
         self.abilities.append(weapon)
+
+    def add_kill(self, num_kills):
+        ''' Update self.kills by num_kills amount'''
+        self.kills += num_kills
+
+    def add_death(self, num_deaths):
+        ''' Update deaths with num_deaths'''
+        self.deaths += num_deaths
 
 
 
@@ -110,7 +127,11 @@ class Hero:
 if __name__ == "__main__":
     # If you run this file from the terminal
     # this block is executed.
-    hero = Hero("Wonder Woman")
-    weapon = Weapon("Lasso of Truth", 90)
-    hero.add_weapon(weapon)
-    print(hero.attack())
+    athena = Hero("Athena")
+    strength = random.randint(400, 30000)
+    big_strength = Armor("Overwhelming Shield", strength)
+    athena.add_armor(big_strength)
+    print('current health')
+    print(athena.current_health)
+    attack_value = athena.defend()
+    print(attack_value)
